@@ -13,4 +13,8 @@
 #include <stdint.h>
 
 
-void load_spritesheet(std::string filename, glm::uvec2* size, std::vector< glm::u8vec4 >* data, OriginLocation origin);
+const std::string RAW_ASSETS_DIR_NAME = "raw_assets";
+const std::string DIST_ASSETS_DIR_NAME = "dist/assets";
+
+void import_spritesheet(std::string filename, OriginLocation origin);
+std::string raw_assets_path(std::string const& suffix);

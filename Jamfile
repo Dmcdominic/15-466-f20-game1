@@ -75,6 +75,7 @@ GAME_NAMES =
 	PPU466
 	main
 	load_save_png
+	data_path
 	gl_compile_program
 	Mode
 	GL
@@ -83,6 +84,8 @@ GAME_NAMES =
 
 IMPORT_ASSETS_NAMES =
     import-sprites
+	load_save_png
+	data_path
     ;
 
 #based on last year's Jamfile - https://github.com/15-466/15-466-f19-base1/blob/master/Jamfile
@@ -93,4 +96,4 @@ LOCATE_TARGET = dist ; #put main in 'dist' directory
 MainFromObjects game : $(GAME_NAMES:S=$(SUFOBJ)) ;
 
 LOCATE_TARGET = asset_pipeline ; #put import-sprites in 'asset_pipeline' directory
-MainFromObjects import-sprites : $(IMPORT_ASSETS_NAMES:S=$(SUFOBJ)) load_save_png$(SUFOBJ) ;
+MainFromObjects import-sprites : $(IMPORT_ASSETS_NAMES:S=$(SUFOBJ)) ;
