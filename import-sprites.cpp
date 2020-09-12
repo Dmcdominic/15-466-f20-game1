@@ -10,14 +10,6 @@
 #include <iostream>
 #include <stdexcept>
 
-// TODO - main...?
-
-
-
-void load_spritesheet(std::string filename, glm::uvec2* size, std::vector< glm::u8vec4 >* data, OriginLocation origin) {
-  // TODO
-}
-
 
 int main(int argc, char** argv) {
 #ifdef _WIN32
@@ -38,4 +30,11 @@ int main(int argc, char** argv) {
 		throw;
 	}
 #endif
+}
+
+
+// TODO - description
+// Loads a .png spritesheet at filename into a chunk
+void load_spritesheet(std::string filename, glm::uvec2* size, std::vector< glm::u8vec4 >* data, OriginLocation origin) {
+	// TODO
 }
