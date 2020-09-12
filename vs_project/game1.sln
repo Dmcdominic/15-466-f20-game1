@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game1", "game1.vcxproj", "{E5C0738D-9C3B-4371-B53B-AAD1EE897FB2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{77C1EF67-9893-4F0A-BE2C-6DFCED2FB2A9}"
+	ProjectSection(SolutionItems) = preProject
+		..\Jamfile = ..\Jamfile
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

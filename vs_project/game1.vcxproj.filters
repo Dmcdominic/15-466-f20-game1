@@ -39,6 +39,9 @@
     <ClCompile Include="..\PPU466.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\import-sprites.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\glcorearb.h">
@@ -69,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\read_write_chunk.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\import-sprites.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

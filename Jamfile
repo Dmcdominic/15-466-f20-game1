@@ -81,8 +81,16 @@ GAME_NAMES =
 	Load
 	;
 
+IMPORT_ASSETS_NAMES =
+    import-sprites
+    ;
+
+#based on last year's Jamfile - https://github.com/15-466/15-466-f19-base1/blob/master/Jamfile
 LOCATE_TARGET = objs ; #put objects in 'objs' directory
-Objects $(GAME_NAMES:S=.cpp) ;
+Objects $(GAME_NAMES:S=.cpp) $(IMPORT_ASSETS_NAMES:S=.cpp) ;
 
 LOCATE_TARGET = dist ; #put main in 'dist' directory
 MainFromObjects game : $(GAME_NAMES:S=$(SUFOBJ)) ;
+
+LOCATE_TARGET = asset_pipeline ; #put import-sprites in 'asset_pipeline' directory
+MainFromObjects import-sprites : $(IMPORT_ASSETS_NAMES:S=$(SUFOBJ)) load_save_png$(SUFOBJ) ;
