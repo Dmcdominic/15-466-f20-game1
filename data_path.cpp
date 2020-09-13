@@ -62,6 +62,31 @@ std::string data_path(std::string const &suffix) {
 	return path + "/" + suffix;
 }
 
+
+// Gets the path to the raw_assets folder
+std::string raw_assets_path(std::string const& suffix) {
+	static std::string _raw_assets_path;
+	if (_raw_assets_path.empty()) {
+		_raw_assets_path = data_path("");
+		_raw_assets_path = _raw_assets_path.substr(0, _raw_assets_path.rfind('\\'));
+		_raw_assets_path = _raw_assets_path + "/" + RAW_ASSETS_DIR_NAME;
+	}
+	return _raw_assets_path + "/" + suffix;
+}
+
+// Gets the path to the dist/assets folder
+std::string dist_assets_path(std::string const& suffix) {
+	static std::string _dist_assets_path;
+	if (_dist_assets_path.empty()) {
+		_dist_assets_path = data_path("");
+		_dist_assets_path = _dist_assets_path.substr(0, _dist_assets_path.rfind('\\'));
+		_dist_assets_path = _dist_assets_path + "/" + DIST_ASSETS_DIR_NAME;
+	}
+	return _dist_assets_path + "/" + suffix;
+}
+
+
+
 /* From Rktcr; to be used eventually!
 static std::string make_user_dir(std::string const &app_name) {
 	std::string ret = "";

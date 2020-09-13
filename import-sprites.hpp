@@ -15,9 +15,6 @@
 #include "PPU466.hpp"
 
 
-const std::string RAW_ASSETS_DIR_NAME = "raw_assets";
-const std::string DIST_ASSETS_DIR_NAME = "dist/assets";
-
 const uint8_t SPRITE_W = 8;
 const uint8_t SPRITE_H = 8;
 const uint8_t SPRITE_PAD = 2;

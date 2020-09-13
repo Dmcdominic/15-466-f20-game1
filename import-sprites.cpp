@@ -1,14 +1,15 @@
+#include "import-sprites.hpp"
+
 #include <glm/glm.hpp>
 #include "load_save_png.hpp"
 #include "data_path.hpp"
-#include "import-sprites.hpp"
 #include "read_write_chunk.hpp"
 
 #include <string>
 #include <vector>
 #include <stdint.h>
-#include <fstream>
 #include <array>
+#include <fstream>
 
 
 //...and for c++ standard library functions:
@@ -23,7 +24,9 @@ int main(int argc, char** argv) {
 	try {
 #endif
 		
-		import_spritesheet("test spritesheet", LowerLeftOrigin);
+		//import_spritesheet("test spritesheet", UpperLeftOrigin);
+		import_spritesheet("background sheet", UpperLeftOrigin);
+		import_spritesheet("mem tiles", UpperLeftOrigin);
 		return 0;
 
 #ifdef _WIN32
@@ -40,9 +43,9 @@ int main(int argc, char** argv) {
 }
 
 
-// TODO - description
 // Loads a .png spritesheet at filename into a chunk
 void import_spritesheet(std::string filename, OriginLocation origin) {
+	std::cout << "import_spritesheet() called" << std::endl;
 	std::string png_filename = raw_assets_path(filename) + ".png";
 	std::string chunk_filename = dist_assets_path(filename) + "_CHUNK";
 	// Load the png
@@ -89,10 +92,10 @@ void import_spritesheet(std::string filename, OriginLocation origin) {
 					}
 					// Set bit0 and bit1 for the tile
 					if (colr % 2 == 1) {
-						tile.bit0[sy] += 1 << (SPRITE_W - sx - 1);
+						tile.bit0[SPRITE_H - sy - 1] += 1 << sx;
 					}
 					if (colr > 1) {
-						tile.bit1[sy] += 1 << (SPRITE_W - sx - 1);
+						tile.bit1[SPRITE_H - sy - 1] += 1 << sx;
 					}
 					sy++;
 				}
@@ -102,9 +105,9 @@ void import_spritesheet(std::string filename, OriginLocation origin) {
 			s.tiles.emplace_back(tile);
 		}
 	}
-	std::cout << "past the big for loops" << std::endl;
 
 	// Format the palette and tile together into one chunk
+	std::cout << "Formatting the palette and tile together into one chunk" << std::endl;
 	data.clear();
 	for (uint8_t colr = 0; colr < s.palette.size(); colr++) {
 		data.emplace_back(s.palette[colr]);
@@ -119,32 +122,20 @@ void import_spritesheet(std::string filename, OriginLocation origin) {
 		data.emplace_back(vec);
 		vec = glm::u8vec4(t_iter->bit1[4], t_iter->bit1[5], t_iter->bit1[6], t_iter->bit1[7]);
 		data.emplace_back(vec);
+
+		/*vec = glm::u8vec4(t_iter->bit0[7], t_iter->bit0[6], t_iter->bit0[5], t_iter->bit0[4]);
+		data.emplace_back(vec);
+		vec = glm::u8vec4(t_iter->bit0[3], t_iter->bit0[2], t_iter->bit0[1], t_iter->bit0[0]);
+		data.emplace_back(vec);
+		vec = glm::u8vec4(t_iter->bit1[7], t_iter->bit1[6], t_iter->bit1[5], t_iter->bit1[4]);
+		data.emplace_back(vec);
+		vec = glm::u8vec4(t_iter->bit1[3], t_iter->bit1[2], t_iter->bit1[1], t_iter->bit1[0]);
+		data.emplace_back(vec);*/
 	}
 
 	// Save the tile and palette into one chunk
+	std::cout << "Writing the chunk file" << std::endl;
 	std::ofstream chunk_file(chunk_filename, std::ios::binary);
 	write_chunk(std::string("sprt"), data, &chunk_file);
-}
-
-
-// Gets the path to the raw_assets folder
-std::string raw_assets_path(std::string const& suffix) {
-	static std::string _raw_assets_path;
-	if (_raw_assets_path.empty()) {
-		_raw_assets_path = data_path("");
-		_raw_assets_path = _raw_assets_path.substr(0, _raw_assets_path.rfind('\\'));
-		_raw_assets_path = _raw_assets_path + "/" + RAW_ASSETS_DIR_NAME;
-	}
-	return _raw_assets_path + "/" + suffix;
-}
-
-// Gets the path to the dist/assets folder
-std::string dist_assets_path(std::string const& suffix) {
-	static std::string _dist_assets_path;
-	if (_dist_assets_path.empty()) {
-		_dist_assets_path = data_path("");
-		_dist_assets_path = _dist_assets_path.substr(0, _dist_assets_path.rfind('\\'));
-		_dist_assets_path = _dist_assets_path + "/" + DIST_ASSETS_DIR_NAME;
-	}
-	return _dist_assets_path + "/" + suffix;
+	chunk_file.close();
 }
