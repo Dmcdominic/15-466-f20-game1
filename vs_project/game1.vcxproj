@@ -99,6 +99,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\data_path.cpp" />
     <ClCompile Include="..\GL.cpp" />
     <ClCompile Include="..\gl_compile_program.cpp" />
     <ClCompile Include="..\import-sprites.cpp" />
@@ -110,6 +111,7 @@
     <ClCompile Include="..\PPU466.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\data_path.hpp" />
     <ClInclude Include="..\GL.hpp" />
     <ClInclude Include="..\glcorearb.h" />
     <ClInclude Include="..\gl_compile_program.hpp" />
