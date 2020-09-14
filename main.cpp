@@ -113,7 +113,8 @@ int main(int argc, char **argv) {
 	on_resize();
 
 	//This will loop until the current mode is set to null:
-	while (Mode::current) {
+	bool QUIT = false;
+	while (Mode::current && !QUIT) {
 		//every pass through the game loop creates one frame of output
 		//  by performing three steps:
 
@@ -125,7 +126,7 @@ int main(int argc, char **argv) {
 					on_resize();
 				}
 				//handle input:
-				if (Mode::current && Mode::current->handle_event(evt, window_size)) {
+				if (Mode::current && Mode::current->handle_event(evt, window_size, QUIT)) {
 					// mode handled it; great
 				} else if (evt.type == SDL_QUIT) {
 					Mode::set_current(nullptr);

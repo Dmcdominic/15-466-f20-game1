@@ -23,8 +23,9 @@ struct LoadedSprites {
 	~LoadedSprites();
 
 	// Only room for 8 palettes, so we can't have more than 8 spritesheets
-	const std::array< std::string, 1 > sheet_names = { "test spritesheet" };
-	const std::array< std::string, 1 > magics = { "sprt" };
+	const std::array< std::string, 2 > sheet_names = { "background sheet", "mem tiles" };
+	const std::array< std::string, 2 > magics = { "sprt", "sprt" };
+	const std::array< uint8_t, 2 > copies = { 1, 2 };
 
 	std::array< PPU466::Palette, 8 > palette_table;
 	std::array< PPU466::Tile, 16 * 16 > tile_table;
@@ -73,33 +74,37 @@ LoadedSprites::LoadedSprites() {
 		}
 		
 		// Load the tiles
-		for (size_t iTC = 0; (iTC + 1) * 4 + 8 <= data.size(); iTC++) {
-			assert(tileCounter < tile_table.size());
-			assert(dctr < data.size());
+		uint16_t dctr_hold = dctr;
+		for (size_t copy = 0; copy < copies[i]; copy++) {
+			dctr = dctr_hold;
+			for (size_t iTC = 0; (iTC + 1) * 4 + palette_table[i].size() <= data.size(); iTC++) {
+				assert(tileCounter < tile_table.size());
+				assert(dctr < data.size());
 
-			// bit0
-			for (uint16_t i = 0; i < 4; i++) {
-				tile_table[tileCounter].bit0[i] = data[dctr][i];
-			}
-			dctr++;
-			assert(dctr < data.size());
-			for (uint16_t i = 4; i < 8; i++) {
-				tile_table[tileCounter].bit0[i] = data[dctr][i - 4];
-			}
-			dctr++;
-			assert(dctr < data.size());
-			// bit1
-			for (uint16_t i = 0; i < 4; i++) {
-				tile_table[tileCounter].bit1[i] = data[dctr][i];
-			}
-			dctr++;
-			assert(dctr < data.size());
-			for (uint16_t i = 4; i < 8; i++) {
-				tile_table[tileCounter].bit1[i] = data[dctr][i - 4];
-			}
-			dctr++;
+				// bit0
+				for (uint16_t i = 0; i < 4; i++) {
+					tile_table[tileCounter].bit0[i] = data[dctr][i];
+				}
+				dctr++;
+				assert(dctr < data.size());
+				for (uint16_t i = 4; i < 8; i++) {
+					tile_table[tileCounter].bit0[i] = data[dctr][i - 4];
+				}
+				dctr++;
+				assert(dctr < data.size());
+				// bit1
+				for (uint16_t i = 0; i < 4; i++) {
+					tile_table[tileCounter].bit1[i] = data[dctr][i];
+				}
+				dctr++;
+				assert(dctr < data.size());
+				for (uint16_t i = 4; i < 8; i++) {
+					tile_table[tileCounter].bit1[i] = data[dctr][i - 4];
+				}
+				dctr++;
 
-			tileCounter++;
+				tileCounter++;
+			}
 		}
 	}
 }

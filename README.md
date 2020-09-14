@@ -14,7 +14,11 @@ How Your Asset Pipeline Works:
 
 How To Play:
 
-(TODO: describe the controls and (if needed) goals/strategy.)
+* Use the arrow keys or WASD to swap which card you have selected.
+* Press 'Space' to flip the current card.
+ * Flip 2 matching cards at a time until you've uncovered all pairs.
+ * Whenever you flip a card, all adjacent cards will be corrupted.
+* Press 'Q' to quit.
 
 Sources: (TODO: list a source URL for any assets you did not create yourself. Make sure you have a license for the asset.)
 

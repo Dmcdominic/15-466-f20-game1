@@ -16,129 +16,189 @@
 Load< LoadedSprites > loadedSprites(LoadTagDefault); //will 'new LoadedSprites()' by default
 
 
+struct Board {
+	int test;
+};
+
+
 PlayMode::PlayMode() {
-	//TODO:
-	// you *must* use an asset pipeline of some sort to generate tiles.
-	// don't hardcode them like this!
-	// or, at least, if you do hardcode them like this,
-	//  make yourself a script that spits out the code that you paste in here
-	//   and check that script into your repository.
-
-	//Also, *don't* use these tiles in your game:
-
-	//{ //use tiles 0-16 as some weird dot pattern thing:
-	//	std::array< uint8_t, 8*8 > distance;
-	//	for (uint32_t y = 0; y < 8; ++y) {
-	//		for (uint32_t x = 0; x < 8; ++x) {
-	//			float d = glm::length(glm::vec2((x + 0.5f) - 4.0f, (y + 0.5f) - 4.0f));
-	//			d /= glm::length(glm::vec2(4.0f, 4.0f));
-	//			distance[x+8*y] = std::max(0,std::min(255,int32_t( 255.0f * d )));
-	//		}
-	//	}
-	//	for (uint32_t index = 0; index < 16; ++index) {
-	//		PPU466::Tile tile;
-	//		uint8_t t = (255 * index) / 16;
-	//		for (uint32_t y = 0; y < 8; ++y) {
-	//			uint8_t bit0 = 0;
-	//			uint8_t bit1 = 0;
-	//			for (uint32_t x = 0; x < 8; ++x) {
-	//				uint8_t d = distance[x+8*y];
-	//				if (d > t) {
-	//					bit0 |= (1 << x);
-	//				} else {
-	//					bit1 |= (1 << x);
-	//				}
-	//			}
-	//			tile.bit0[y] = bit0;
-	//			tile.bit1[y] = bit1;
-	//		}
-	//		ppu.tile_table[index] = tile;
-	//	}
-	//}
-
-	////use sprite 32 as a "player":
-	//ppu.tile_table[32].bit0 = {
-	//	0b01111110,
-	//	0b11111111,
-	//	0b11111111,
-	//	0b11111111,
-	//	0b11111111,
-	//	0b11111111,
-	//	0b11111111,
-	//	0b01111110,
-	//};
-	//ppu.tile_table[32].bit1 = {
-	//	0b00000000,
-	//	0b00000000,
-	//	0b00011000,
-	//	0b00100100,
-	//	0b00000000,
-	//	0b00100100,
-	//	0b00000000,
-	//	0b00000000,
-	//};
-
-	//makes the outside of tiles 0-16 solid:
-	//ppu.palette_table[0] = {
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0x00),
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0xff),
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0x00),
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0xff),
-	//};
-
-	////makes the center of tiles 0-16 solid:
-	//ppu.palette_table[1] = {
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0x00),
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0x00),
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0xff),
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0xff),
-	//};
-
-	////used for the player:
-	//ppu.palette_table[7] = {
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0x00),
-	//	glm::u8vec4(0xff, 0xff, 0x00, 0xff),
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0xff),
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0xff),
-	//};
-
-	////used for the misc other sprites:
-	//ppu.palette_table[6] = {
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0x00),
-	//	glm::u8vec4(0x88, 0x88, 0xff, 0xff),
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0xff),
-	//	glm::u8vec4(0x00, 0x00, 0x00, 0x00),
-	//};
-
-	// TODO - set palette_table and tile_table here
+	std::cout << "--------- PlayMode() called --------" << std::endl;
+	// Set palette_table and tile_table using loadedSprites
 	ppu.palette_table = loadedSprites->palette_table;
 	ppu.tile_table = loadedSprites->tile_table;
 
+	// Background laid out using the first 6 tiles in "background sheet"
+	for (uint32_t y = 0; y < PPU466::BackgroundHeight; ++y) {
+		for (uint32_t x = 0; x < PPU466::BackgroundWidth; ++x) {
+			ppu.background[x + PPU466::BackgroundWidth * y] = 4;
+			if (y >= (PPU466::ScreenHeight / 8) - 6 || y < 3 ||
+				x >= (PPU466::ScreenWidth / 8) - 4 || x < 3) {
+				ppu.background[x + PPU466::BackgroundWidth * y] = 5;
+				continue;
+			}
+			if (x % 4 == 3 || y % 4 == 3) {
+				ppu.background[x + PPU466::BackgroundWidth * y] = 6;
+			}
+		}
+	}
+
+	InitBoard();
+}
+
+void PlayMode::InitBoard() {
+	// ---- BOARD SETUP ----
+	std::cout << "Starting Board Setup" << std::endl;
+	// an array to label which cards should use which tiles
+	std::array< uint8_t, MEM_TILES_TOTAL > tile_order;
+	for (uint8_t i = 0; i < tile_order.size(); i++) {
+		tile_order[i] = MEM_TILES_START + i;
+	}
+	// Now shuffle it
+	for (uint8_t i = 0; i < tile_order.size() - 1; i++) {
+		uint8_t swap_index = i + (rand() % (MEM_TILES_TOTAL - i));
+		uint8_t tmp = tile_order[i];
+		tile_order[i] = tile_order[swap_index];
+		tile_order[swap_index] = tmp;
+	}
+	std::cout << "Done creating tile_order. Now creating partner_order" << std::endl;
+
+	// an array to label which cards will partner up
+	std::array< uint8_t, BOARD_W* BOARD_H > partner_order;
+	for (uint8_t i = 0; i < partner_order.size(); i++) {
+		partner_order[i] = i;
+	}
+	// Now shuffle it
+	for (uint8_t i = 0; i < partner_order.size() - 1; i++) {
+		uint8_t swap_index = i + (rand() % (BOARD_W * BOARD_H - i));
+		uint8_t tmp = partner_order[i];
+		partner_order[i] = partner_order[swap_index];
+		partner_order[swap_index] = tmp;
+	}
+	std::cout << "Done creating partner_order. Now initializing the board" << std::endl;
+
+	// Initialize the board
+	for (uint32_t cx = 0; cx < BOARD_W; cx++) {
+		for (uint32_t cy = 0; cy < BOARD_H; cy++) {
+			uint8_t cIndex = cx + cy * BOARD_W;
+			Card* card = &Cards[cIndex];
+			if (card->faceup) continue;
+
+			// if it's not faceup, we have to initialize it and its partner
+			uint8_t p_ctr = 0;
+			uint8_t partner_index = partner_order[p_ctr];
+			while (partner_index == UINT8_MAX || partner_index == cIndex || Cards[partner_index].faceup) {
+				p_ctr++;
+				partner_index = partner_order[p_ctr];
+			}
+			Card* partner = &Cards[partner_index];
+			partner_order[p_ctr] = UINT8_MAX;
+
+			card->faceup = true;
+			partner->faceup = true;
+			card->partner = partner_index;
+			partner->partner = cIndex;
+
+			card->attributes = 1;
+			partner->attributes = 1;
+
+			// pick an index and use it for these 2 cards. But no other cards can use it after this!
+			uint8_t tileIndex = tile_order[cIndex];
+			card->index = tileIndex;
+			partner->index = tileIndex + MEM_TILES_TOTAL;
+		}
+	}
+	// Flip them all facedown
+	for (auto cardIter = Cards.begin(); cardIter != Cards.end(); cardIter++) {
+		cardIter->faceup = false;
+	}
+	all_faceup = false;
 }
 
 PlayMode::~PlayMode() {
 }
 
-bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
+bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size, bool &QUIT) {
 
 	if (evt.type == SDL_KEYDOWN) {
-		if (evt.key.keysym.sym == SDLK_LEFT) {
+		if (evt.key.keysym.sym == SDLK_LEFT || evt.key.keysym.sym == SDLK_a) {
+			selected_card.x = (selected_card.x == 0) ? (BOARD_W - 1) : (selected_card.x - 1);
 			left.downs += 1;
 			left.pressed = true;
 			return true;
-		} else if (evt.key.keysym.sym == SDLK_RIGHT) {
+		} else if (evt.key.keysym.sym == SDLK_RIGHT || evt.key.keysym.sym == SDLK_d) {
+			selected_card.x = (selected_card.x == BOARD_W - 1) ? (0) : (selected_card.x + 1);
 			right.downs += 1;
 			right.pressed = true;
 			return true;
-		} else if (evt.key.keysym.sym == SDLK_UP) {
+		} else if (evt.key.keysym.sym == SDLK_UP || evt.key.keysym.sym == SDLK_w) {
+			selected_card.y = (selected_card.y == BOARD_H - 1) ? (0) : (selected_card.y + 1);
 			up.downs += 1;
 			up.pressed = true;
 			return true;
-		} else if (evt.key.keysym.sym == SDLK_DOWN) {
+		} else if (evt.key.keysym.sym == SDLK_DOWN || evt.key.keysym.sym == SDLK_s) {
+			selected_card.y = (selected_card.y == 0) ? (BOARD_H - 1) : (selected_card.y - 1);
 			down.downs += 1;
 			down.pressed = true;
 			return true;
 		}
+
+		// Flip the current card!
+		if (evt.key.keysym.sym == SDLK_SPACE) {
+			if (all_faceup) {
+				/*for (auto cardIter = Cards.begin(); cardIter != Cards.end(); cardIter++) {
+					cardIter->faceup = false;
+				}
+				all_faceup = false;*/
+				InitBoard();
+				return true;
+			}
+			uint8_t cardIndex = selected_card.x + selected_card.y * BOARD_W;
+			Card *card = &Cards[cardIndex];
+			if (faceup_cards[0] != UINT8_MAX && faceup_cards[1] != UINT8_MAX) {
+				// TWO cards are already faceup. Flip them both facedown
+				Cards[faceup_cards[0]].faceup = false;
+				Cards[faceup_cards[1]].faceup = false;
+				faceup_cards[0] = UINT8_MAX;
+				faceup_cards[1] = UINT8_MAX;
+			} else if (card->faceup) {
+				// This is already faceup
+				card->shake_time = 0.2f;
+			} else if (faceup_cards[0] == UINT8_MAX) {
+				// No other card is faceup. Flip this one
+				corruptArea(cardIndex);
+				card->faceup = true;
+				faceup_cards[0] = cardIndex;
+			} else {
+				// Only one other card is faceup. Let's see if they're a match!
+				card->faceup = true;
+				if (card->partner == faceup_cards[0]) {
+					// If they ARE a match, reset the faceup_cards
+					score++;
+					faceup_cards[0] = UINT8_MAX;
+					faceup_cards[1] = UINT8_MAX;
+					// Check here if they're ALL faceup. If so, set all_faceup
+					for (auto cardIter = Cards.begin(); cardIter != Cards.end();) {
+						if (!cardIter->faceup) {
+							break;
+						}
+						cardIter++;
+						if (cardIter == Cards.end()) {
+							all_faceup = true;
+						}
+					}
+				} else {
+					// Otherwise, set the second faceup_card to this (and chance to corrupt)
+					corruptArea(cardIndex);
+					faceup_cards[1] = cardIndex;
+				}
+			}
+		}
+
+		// Quit!
+		if (evt.key.keysym.sym == SDLK_q) {
+			QUIT = true;
+		}
+
 	} else if (evt.type == SDL_KEYUP) {
 		if (evt.key.keysym.sym == SDLK_LEFT) {
 			left.pressed = false;
@@ -162,20 +222,61 @@ void PlayMode::update(float elapsed) {
 
 	//slowly rotates through [0,1):
 	// (will be used to set background color)
-	//background_fade += elapsed / 10.0f;
+	background_fade += elapsed / 10.0f;
 	background_fade -= std::floor(background_fade);
 
 	constexpr float PlayerSpeed = 30.0f;
-	if (left.pressed) player_at.x -= PlayerSpeed * elapsed;
+	/*if (left.pressed) player_at.x -= PlayerSpeed * elapsed;
 	if (right.pressed) player_at.x += PlayerSpeed * elapsed;
 	if (down.pressed) player_at.y -= PlayerSpeed * elapsed;
-	if (up.pressed) player_at.y += PlayerSpeed * elapsed;
+	if (up.pressed) player_at.y += PlayerSpeed * elapsed;*/
 
 	//reset button press counters:
 	left.downs = 0;
 	right.downs = 0;
 	up.downs = 0;
 	down.downs = 0;
+
+	// iterate over card shake_time
+	for (auto cIter = Cards.begin(); cIter != Cards.end(); cIter++) {
+		cIter->shake_time -= elapsed;
+	}
+}
+
+// Corrupt a card and its neighbors
+void PlayMode::corruptArea(uint8_t cIndex, bool bypass_rand) {
+	if (!bypass_rand && corrupt_odds < (static_cast<float>(rand()) / static_cast<float>(RAND_MAX))) {
+		corrupt_odds += corrupt_odds_delta;
+		return;
+	}
+	Card *card = &Cards[cIndex];
+	Card *up = &Cards[uint8_t((int(cIndex) - BOARD_W) % BOARD_TOTAL)];
+	Card *down = &Cards[uint8_t((int(cIndex) + BOARD_W) % BOARD_TOTAL)];
+	Card *left = &Cards[uint8_t((int(cIndex) - 1) % BOARD_TOTAL)];
+	Card *right = &Cards[uint8_t((int(cIndex) + 1) % BOARD_TOTAL)];
+
+	uint8_t randRow = rand() % 8;
+	uint8_t tmp = ppu.tile_table[card->index].bit0[randRow];
+	ppu.tile_table[card->index].bit0[randRow] = ppu.tile_table[up->index].bit0[randRow];
+	ppu.tile_table[up->index].bit0[randRow] = ppu.tile_table[down->index].bit0[randRow];
+	ppu.tile_table[down->index].bit0[randRow] = ppu.tile_table[left->index].bit0[randRow];
+	ppu.tile_table[left->index].bit0[randRow] = ppu.tile_table[right->index].bit0[randRow];
+	ppu.tile_table[right->index].bit0[randRow] = tmp;
+
+	randRow = rand() % 8;
+	tmp = ppu.tile_table[card->index].bit1[randRow];
+	ppu.tile_table[card->index].bit1[randRow] = ppu.tile_table[up->index].bit1[randRow];
+	ppu.tile_table[up->index].bit1[randRow] = ppu.tile_table[down->index].bit1[randRow];
+	ppu.tile_table[down->index].bit1[randRow] = ppu.tile_table[left->index].bit1[randRow];
+	ppu.tile_table[left->index].bit1[randRow] = ppu.tile_table[right->index].bit1[randRow];
+	ppu.tile_table[right->index].bit1[randRow] = tmp;
+
+	//make them shake
+	card->shake_time = 0.4f;
+	up->shake_time = 0.4f;
+	down->shake_time = 0.4f;
+	left->shake_time = 0.4f;
+	right->shake_time = 0.4f;
 }
 
 void PlayMode::draw(glm::uvec2 const &drawable_size) {
@@ -189,35 +290,60 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 		0xff
 	);
 
-	//tilemap gets recomputed every frame as some weird plasma thing:
-	//NOTE: don't do this in your game! actually make a map or something :-)
-	for (uint32_t y = 0; y < PPU466::BackgroundHeight; ++y) {
-		for (uint32_t x = 0; x < PPU466::BackgroundWidth; ++x) {
-			//TODO: make weird plasma thing
-			//ppu.background[x+PPU466::BackgroundWidth*y] = ((x+y)%16);
-			ppu.background[x + PPU466::BackgroundWidth * y] = 0 + (0); // For palette 1: 256
+	//background scroll:
+	/*ppu.background_position.x = int32_t(-0.5f * player_at.x);
+	ppu.background_position.y = int32_t(-0.5f * player_at.y);*/
+
+	// cards
+	uint32_t sc = 0;
+	for (uint32_t cx = 0; cx < BOARD_W; cx++) {
+		for (uint32_t cy = 0; cy < BOARD_H; cy++) {
+			Card *card = &Cards[cx + cy * BOARD_W];
+			ppu.sprites[sc].x = BOARD_X + 32 * cx - 8;
+			ppu.sprites[sc].y = BOARD_Y + 32 * cy - 8;
+			if (card->shake_time > 0) {
+				ppu.sprites[sc].x += 2 * (rand() % (2 * SHAKE_MULT)) - SHAKE_MULT;
+				ppu.sprites[sc].y += 2 * (rand() % (2 * SHAKE_MULT)) - SHAKE_MULT;
+			}
+			if (card->faceup) {
+				ppu.sprites[sc].index = card->index;
+				ppu.sprites[sc].attributes = card->attributes;
+			} else {
+				ppu.sprites[sc].index = 7;
+				ppu.sprites[sc].attributes = 0;
+			}
+			sc++;
 		}
 	}
 
-	//background scroll:
-	ppu.background_position.x = int32_t(-0.5f * player_at.x);
-	ppu.background_position.y = int32_t(-0.5f * player_at.y);
-
-	//player sprite:
-	ppu.sprites[0].x = int32_t(player_at.x);
-	ppu.sprites[0].y = int32_t(player_at.y);
-	ppu.sprites[0].index = 0; //32
-	ppu.sprites[0].attributes = 0; //7
-
-	//some other misc sprites:
-	for (uint32_t i = 1; i < 63; ++i) {
-		float amt = (i + 2.0f * background_fade) / 62.0f;
-		ppu.sprites[i].x = int32_t(0.5f * PPU466::ScreenWidth + std::cos( 2.0f * M_PI * amt * 5.0f + 0.01f * player_at.x) * 0.4f * PPU466::ScreenWidth);
-		ppu.sprites[i].y = int32_t(0.5f * PPU466::ScreenHeight + std::sin( 2.0f * M_PI * amt * 3.0f + 0.01f * player_at.y) * 0.4f * PPU466::ScreenWidth);
-		ppu.sprites[i].index = 32;
-		ppu.sprites[i].attributes = 6;
-		if (i % 2) ppu.sprites[i].attributes |= 0x80; //'behind' bit
+	// select indicator
+	for (uint32_t corner_y = 0; corner_y < 2; corner_y++) {
+		for (uint32_t corner_x = 0; corner_x < 2; corner_x++) {
+			ppu.sprites[sc].x = BOARD_X + 32 * selected_card.x - 8 + ((corner_x == 0) ? -8 : 8);
+			ppu.sprites[sc].y = BOARD_Y + 32 * selected_card.y - 8 + ((corner_y == 0) ? -8 : 8);
+			ppu.sprites[sc].index = 8 + corner_x + 2 * (1 - corner_y);
+			ppu.sprites[sc].attributes = 0;
+			sc++;
+		}
 	}
+
+	// Score counter
+	uint16_t tens = score / 10;
+	uint16_t ones = score % 10;
+
+	if (tens > 0) {
+		ppu.sprites[sc].x = BOARD_X - 8;
+		ppu.sprites[sc].y = BOARD_Y + 32 * 5 - 8;
+		ppu.sprites[sc].index = MEM_TILES_START + tens;
+		ppu.sprites[sc].attributes = 1;
+		sc++;
+	}
+
+	ppu.sprites[sc].x = BOARD_X - 8 + 8;
+	ppu.sprites[sc].y = BOARD_Y + 32 * 5 - 8;
+	ppu.sprites[sc].index = MEM_TILES_START + ones;
+	ppu.sprites[sc].attributes = 1;
+	sc++;
 
 	//--- actually draw ---
 	ppu.draw(drawable_size);

@@ -59,8 +59,8 @@ void import_spritesheet(std::string filename, OriginLocation origin) {
 	uint8_t colorTotal = 0; // Tracks how many new colors we've found and placed in palette
 
 	std::cout << "about to enter the big for loops" << std::endl;
-	for (uint16_t sprite_x = 0; glm::u32(sprite_x * (SPRITE_W + SPRITE_PAD) + SPRITE_W) <= size.x; sprite_x++) {
-		for (uint16_t sprite_y = 0; glm::u32(sprite_y * (SPRITE_H + SPRITE_PAD) + SPRITE_H) <= size.y; sprite_y++) {
+	for (uint16_t sprite_y = 0; glm::u32(sprite_y * (SPRITE_H + SPRITE_PAD) + SPRITE_H) <= size.y; sprite_y++) {
+		for (uint16_t sprite_x = 0; glm::u32(sprite_x * (SPRITE_W + SPRITE_PAD) + SPRITE_W) <= size.x; sprite_x++) {
 			// Now iterate over the 64 pixels in this 8x8 sprite
 			std::cout << "sprite_x: " << sprite_x << ", sprite_y: " << sprite_y << std::endl;
 			PPU466::Tile tile = PPU466::Tile();
