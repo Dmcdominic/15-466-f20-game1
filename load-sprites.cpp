@@ -60,7 +60,7 @@ LoadedSprites::LoadedSprites() {
 
 		std::vector< glm::u8vec4 > data;
 
-		std::string chunk_filename = dist_assets_path(sheet_name) + "_CHUNK";
+		std::string chunk_filename = data_path("assets/" + sheet_name + "_CHUNK");
 		std::ifstream chunk_file(chunk_filename, std::ios::binary);
 		read_chunk(chunk_file, magics[i], &data);
 		chunk_file.close();
