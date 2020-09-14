@@ -93,7 +93,7 @@ LOCATE_TARGET = objs ; #put objects in 'objs' directory
 Objects $(GAME_NAMES:S=.cpp) $(IMPORT_ASSETS_NAMES:S=.cpp) ;
 
 LOCATE_TARGET = dist ; #put main in 'dist' directory
-MainFromObjects game : $(GAME_NAMES:S=$(SUFOBJ)) ;
+MainFromObjects memcorrupt : $(GAME_NAMES:S=$(SUFOBJ)) ;
 
 LOCATE_TARGET = asset_pipeline ; #put import-sprites in 'asset_pipeline' directory
 MainFromObjects import-sprites : $(IMPORT_ASSETS_NAMES:S=$(SUFOBJ)) ;

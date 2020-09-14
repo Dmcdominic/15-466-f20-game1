@@ -9,16 +9,12 @@
 #include "Load.hpp"
 #include "load-sprites.cpp"
 #include <random>
+#include <time.h>
 
 
 
 // Load tiles and palettes from chunk files
 Load< LoadedSprites > loadedSprites(LoadTagDefault); //will 'new LoadedSprites()' by default
-
-
-struct Board {
-	int test;
-};
 
 
 PlayMode::PlayMode() {
@@ -41,6 +37,9 @@ PlayMode::PlayMode() {
 			}
 		}
 	}
+
+	// First, seed the random number generator
+	std::srand((unsigned int)time(NULL));
 
 	InitBoard();
 }

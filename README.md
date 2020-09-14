@@ -1,8 +1,8 @@
-# (TODO: your game's title)
+# memcorrupt
 
-Author: (TODO: your name)
+Author: Dominic Calkosz
 
-Design: (TODO: In two sentences or fewer, describe what is new and interesting about your game.)
+Design: A new take on the classic memory game of matching pairs. Flipping a card has a chance to corrupt it and its neighbors, permanently.
 
 Screen Shot:
 
@@ -10,17 +10,20 @@ Screen Shot:
 
 How Your Asset Pipeline Works:
 
-(TODO: describe the steps in your asset pipeline, from source files to tiles/backgrounds/whatever you upload to the PPU466.)
+Spritesheets of tiles (8x8 pixels with 2 pixel spacing) can be added to the raw_assets folder as .png files and then imported using asset_pipline/import-sprites.exe.
+A single spritesheet can only include 4 distinct colors, and thus makes up a palette.
+The sheet is imported, processed into a vector of tiles and a single palette, and then written to a chunk file in dist/assets.
+At runtime, the chunk files are loaded and the tiles and palettes are set into the ppu tile_table and palette_table respectively.
 
 How To Play:
 
 * Use the arrow keys or WASD to swap which card you have selected.
 * Press 'Space' to flip the current card.
  * Flip 2 matching cards at a time until you've uncovered all pairs.
- * Whenever you flip a card, all adjacent cards will be corrupted.
+ * Continue playing to improve your high score... but beware of the ever-increasing corruption.
 * Press 'Q' to quit.
 
-Sources: (TODO: list a source URL for any assets you did not create yourself. Make sure you have a license for the asset.)
+Sources: All assets created by me in Aseprite.
 
 This game was built with [NEST](NEST.md).
 
