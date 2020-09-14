@@ -58,11 +58,9 @@ void import_spritesheet(std::string filename, OriginLocation origin) {
 	SpriteSet s;
 	uint8_t colorTotal = 0; // Tracks how many new colors we've found and placed in palette
 
-	std::cout << "about to enter the big for loops" << std::endl;
 	for (uint16_t sprite_y = 0; glm::u32(sprite_y * (SPRITE_H + SPRITE_PAD) + SPRITE_H) <= size.y; sprite_y++) {
 		for (uint16_t sprite_x = 0; glm::u32(sprite_x * (SPRITE_W + SPRITE_PAD) + SPRITE_W) <= size.x; sprite_x++) {
 			// Now iterate over the 64 pixels in this 8x8 sprite
-			std::cout << "sprite_x: " << sprite_x << ", sprite_y: " << sprite_y << std::endl;
 			PPU466::Tile tile = PPU466::Tile();
 			uint8_t sx = 0; //the x index into the 8x8 tile
 			uint8_t sy = 0;
@@ -122,15 +120,6 @@ void import_spritesheet(std::string filename, OriginLocation origin) {
 		data.emplace_back(vec);
 		vec = glm::u8vec4(t_iter->bit1[4], t_iter->bit1[5], t_iter->bit1[6], t_iter->bit1[7]);
 		data.emplace_back(vec);
-
-		/*vec = glm::u8vec4(t_iter->bit0[7], t_iter->bit0[6], t_iter->bit0[5], t_iter->bit0[4]);
-		data.emplace_back(vec);
-		vec = glm::u8vec4(t_iter->bit0[3], t_iter->bit0[2], t_iter->bit0[1], t_iter->bit0[0]);
-		data.emplace_back(vec);
-		vec = glm::u8vec4(t_iter->bit1[7], t_iter->bit1[6], t_iter->bit1[5], t_iter->bit1[4]);
-		data.emplace_back(vec);
-		vec = glm::u8vec4(t_iter->bit1[3], t_iter->bit1[2], t_iter->bit1[1], t_iter->bit1[0]);
-		data.emplace_back(vec);*/
 	}
 
 	// Save the tile and palette into one chunk

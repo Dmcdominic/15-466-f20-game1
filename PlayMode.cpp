@@ -145,10 +145,6 @@ bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size,
 		// Flip the current card!
 		if (evt.key.keysym.sym == SDLK_SPACE) {
 			if (all_faceup) {
-				/*for (auto cardIter = Cards.begin(); cardIter != Cards.end(); cardIter++) {
-					cardIter->faceup = false;
-				}
-				all_faceup = false;*/
 				InitBoard();
 				return true;
 			}
@@ -225,12 +221,6 @@ void PlayMode::update(float elapsed) {
 	background_fade += elapsed / 10.0f;
 	background_fade -= std::floor(background_fade);
 
-	constexpr float PlayerSpeed = 30.0f;
-	/*if (left.pressed) player_at.x -= PlayerSpeed * elapsed;
-	if (right.pressed) player_at.x += PlayerSpeed * elapsed;
-	if (down.pressed) player_at.y -= PlayerSpeed * elapsed;
-	if (up.pressed) player_at.y += PlayerSpeed * elapsed;*/
-
 	//reset button press counters:
 	left.downs = 0;
 	right.downs = 0;
@@ -289,10 +279,6 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 		std::min(255,std::max(0,int32_t(255 * 0.5f * (0.5f + std::sin( 2.0f * M_PI * (background_fade + 2.0f / 3.0f) ) ) ))),
 		0xff
 	);
-
-	//background scroll:
-	/*ppu.background_position.x = int32_t(-0.5f * player_at.x);
-	ppu.background_position.y = int32_t(-0.5f * player_at.y);*/
 
 	// cards
 	uint32_t sc = 0;
